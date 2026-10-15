@@ -1,22 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Freelancer Dashboard | FreelancerHub 2.0</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -31,22 +23,19 @@
 
             <button
                 class="btn btn-secondary"
-                onclick="openContracts()"
-            >
+                onclick="openContracts()">
                 Contracts
             </button>
 
             <button
                 class="btn btn-secondary"
-                onclick="openMessages()"
-            >
+                onclick="openMessages()">
                 Messages
             </button>
 
             <button
                 class="btn btn-danger"
-                onclick="logout()"
-            >
+                onclick="logout()">
                 Logout
             </button>
 
@@ -54,46 +43,34 @@
 
     </nav>
 
-
     <main class="dashboard-container">
 
         <section class="dashboard-header">
 
             <div>
-
                 <h1>
                     Welcome,
-                    <span id="userName">
-                        Freelancer
-                    </span>
+                    <span id="userName">Freelancer</span>
                 </h1>
 
                 <p>
                     Find projects and submit proposals.
                 </p>
-
             </div>
 
         </section>
-
 
         <!-- PROFILE -->
 
         <section class="dashboard-section">
 
-            <h2>
-                My Profile
-            </h2>
+            <h2>My Profile</h2>
 
-            <div
-                id="profileContainer"
-                class="profile-card"
-            >
+            <div id="profileContainer" class="profile-card">
                 Loading profile...
             </div>
 
         </section>
-
 
         <!-- AVAILABLE PROJECTS -->
 
@@ -101,19 +78,15 @@
 
             <div class="section-header">
 
-                <h2>
-                    Available Projects
-                </h2>
+                <h2>Available Projects</h2>
 
                 <button
                     class="btn btn-secondary"
-                    onclick="loadProjects()"
-                >
+                    onclick="loadProjects()">
                     Refresh
                 </button>
 
             </div>
-
 
             <div id="projectsContainer">
 
@@ -127,37 +100,27 @@
 
     </main>
 
-
     <!-- PROPOSAL MODAL -->
 
-    <div
-        id="proposalModal"
-        class="modal hidden"
-    >
+    <div id="proposalModal" class="modal hidden">
 
         <div class="modal-content">
 
             <button
                 class="modal-close"
-                onclick="closeProposalModal()"
-            >
+                onclick="closeProposalModal()">
                 ×
             </button>
 
-            <h2>
-                Submit Proposal
-            </h2>
-
+            <h2>Submit Proposal</h2>
 
             <form id="proposalForm">
 
                 <input
                     type="hidden"
-                    id="proposalProjectId"
-                >
+                    id="proposalProjectId">
 
-
-                <label>
+                <label for="proposedAmount">
                     Proposed Amount
                 </label>
 
@@ -165,11 +128,9 @@
                     type="number"
                     id="proposedAmount"
                     min="1"
-                    required
-                >
+                    required>
 
-
-                <label>
+                <label for="estimatedDays">
                     Estimated Days
                 </label>
 
@@ -177,25 +138,20 @@
                     type="number"
                     id="estimatedDays"
                     min="1"
-                    required
-                >
+                    required>
 
-
-                <label>
+                <label for="proposalText">
                     Proposal
                 </label>
 
                 <textarea
                     id="proposalText"
                     rows="6"
-                    required
-                ></textarea>
-
+                    required></textarea>
 
                 <button
                     type="submit"
-                    class="btn btn-primary auth-submit"
-                >
+                    class="btn btn-primary auth-submit">
                     Submit Proposal
                 </button>
 
@@ -205,162 +161,62 @@
 
     </div>
 
-
     <script src="app.js"></script>
 
-
     <script>
-
-        const token =
-            localStorage.getItem("token");
-
-        const role =
-            localStorage.getItem("role");
-
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
 
         if (!token || role !== "FREELANCER") {
-
-            alert(
-                "Please login as a freelancer."
-            );
-
-            window.location.href =
-                "index.html";
-
+            alert("Please login as a freelancer.");
+            window.location.href = "index.html";
         }
 
-
-        document
-            .getElementById("userName")
-            .textContent =
-            localStorage.getItem(
-                "user_name"
-            ) || "Freelancer";
+        document.getElementById("userName").textContent =
+            localStorage.getItem("user_name") || "Freelancer";
 
 
-        // LOAD PROFILE
+        // LOAD PROFILE - NAME ONLY
 
         async function loadProfile() {
 
+            const container =
+                document.getElementById("profileContainer");
+
             try {
 
-                const response =
-                    await fetch(
-                        `${API_URL}/freelancer/profile`,
-                        {
-                            headers: {
-                                "Authorization":
-                                    `Bearer ${token}`
-                            }
+                const response = await fetch(
+                    `${API_URL}/freelancer/profile`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
                         }
-                    );
+                    }
+                );
 
-
-                const data =
-                    await response.json();
-
+                const data = await response.json();
 
                 if (!response.ok) {
-
                     throw new Error(
-                        data.message ||
-                        "Failed to load profile."
+                        data.message || "Failed to load profile."
                     );
-
                 }
 
-
                 const profile =
-                    data.profile ||
-                    data.freelancer ||
-                    data;
+                    data.profile || data.freelancer || data;
 
+                // Only display the freelancer's name
+                const heading = document.createElement("h3");
+                heading.textContent = profile.name || "Freelancer";
 
-                document
-                    .getElementById(
-                        "profileContainer"
-                    )
-                    .innerHTML = `
-
-                        <h3>
-                            ${profile.name || ""}
-                        </h3>
-
-                        <p>
-                            <strong>
-                                Title:
-                            </strong>
-
-                            ${
-                                profile.professional_title ||
-                                "Not specified"
-                            }
-                        </p>
-
-                        <p>
-                            <strong>
-                                Bio:
-                            </strong>
-
-                            ${
-                                profile.bio ||
-                                "No bio added."
-                            }
-                        </p>
-
-                        <p>
-                            <strong>
-                                Hourly Rate:
-                            </strong>
-
-                            ₹${
-                                Number(
-                                    profile.hourly_rate || 0
-                                ).toLocaleString("en-IN")
-                            }
-                        </p>
-
-                        <p>
-                            <strong>
-                                Experience:
-                            </strong>
-
-                            ${
-                                profile.experience_years ||
-                                0
-                            } years
-                        </p>
-
-                        <p>
-                            <strong>
-                                Location:
-                            </strong>
-
-                            ${
-                                profile.location ||
-                                "Not specified"
-                            }
-                        </p>
-
-                    `;
-
+                container.replaceChildren(heading);
 
             } catch (error) {
 
-                console.error(
-                    "Profile error:",
-                    error
-                );
+                console.error("Profile error:", error);
 
-                document
-                    .getElementById(
-                        "profileContainer"
-                    )
-                    .innerHTML = `
-                        <div class="error-message">
-                            ${error.message}
-                        </div>
-                    `;
+                container.textContent = error.message;
+                container.classList.add("error-message");
 
             }
 
@@ -372,156 +228,99 @@
         async function loadProjects() {
 
             const container =
-                document.getElementById(
-                    "projectsContainer"
-                );
-
+                document.getElementById("projectsContainer");
 
             container.innerHTML = `
-                <p class="loading">
-                    Loading projects...
-                </p>
+                <p class="loading">Loading projects...</p>
             `;
-
 
             try {
 
-                const response =
-                    await fetch(
-                        `${API_URL}/freelancer/projects`,
-                        {
-                            headers: {
-                                "Authorization":
-                                    `Bearer ${token}`
-                            }
+                const response = await fetch(
+                    `${API_URL}/freelancer/projects`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
                         }
-                    );
+                    }
+                );
 
-
-                const data =
-                    await response.json();
-
+                const data = await response.json();
 
                 if (!response.ok) {
-
                     throw new Error(
-                        data.message ||
-                        "Failed to load projects."
+                        data.message || "Failed to load projects."
                     );
-
                 }
 
-
-                const projects =
-                    data.projects || [];
-
+                const projects = data.projects || [];
 
                 if (projects.length === 0) {
 
                     container.innerHTML = `
                         <div class="empty-state">
-
-                            <h3>
-                                No Open Projects
-                            </h3>
-
-                            <p>
-                                New projects will appear here.
-                            </p>
-
+                            <h3>No Open Projects</h3>
+                            <p>New projects will appear here.</p>
                         </div>
                     `;
 
                     return;
-
                 }
 
+                container.innerHTML = projects.map(project => `
 
-                container.innerHTML =
-                    projects.map(
-                        project => `
+                    <div class="project-card">
 
-                            <div class="project-card">
+                        <div class="project-header">
 
-                                <div class="project-header">
-
-                                    <div>
-
-                                        <h3>
-                                            ${project.title}
-                                        </h3>
-
-                                        <p>
-                                            ${project.category || ""}
-                                        </p>
-
-                                    </div>
-
-                                    <span class="status open">
-                                        ${project.status}
-                                    </span>
-
-                                </div>
-
-
-                                <p>
-                                    ${project.description}
-                                </p>
-
-
-                                <div class="project-details">
-
-                                    <span>
-                                        <strong>
-                                            Budget:
-                                        </strong>
-
-                                        ₹${Number(
-                                            project.budget || 0
-                                        ).toLocaleString("en-IN")}
-                                    </span>
-
-
-                                    <span>
-                                        <strong>
-                                            Deadline:
-                                        </strong>
-
-                                        ${formatDate(
-                                            project.deadline
-                                        )}
-                                    </span>
-
-                                </div>
-
-
-                                <button
-                                    class="btn btn-primary"
-                                    onclick="openProposalModal(
-                                        ${project.project_id}
-                                    )"
-                                >
-                                    Submit Proposal
-                                </button>
-
+                            <div>
+                                <h3>${project.title ?? ""}</h3>
+                                <p>${project.category ?? ""}</p>
                             </div>
 
-                        `
-                    ).join("");
+                            <span class="status open">
+                                ${project.status ?? ""}
+                            </span>
 
+                        </div>
+
+                        <p>${project.description ?? ""}</p>
+
+                        <div class="project-details">
+
+                            <span>
+                                <strong>Budget:</strong>
+                                ₹${Number(
+                                    project.budget || 0
+                                ).toLocaleString("en-IN")}
+                            </span>
+
+                            <span>
+                                <strong>Deadline:</strong>
+                                ${formatDate(project.deadline)}
+                            </span>
+
+                        </div>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="openProposalModal(${Number(project.project_id)})">
+                            Submit Proposal
+                        </button>
+
+                    </div>
+
+                `).join("");
 
             } catch (error) {
 
-                console.error(
-                    "Project error:",
-                    error
-                );
+                console.error("Project error:", error);
 
-                container.innerHTML = `
-                    <div class="error-message">
-                        ${error.message}
-                    </div>
-                `;
+                const errorBox = document.createElement("div");
+                errorBox.className = "error-message";
+                errorBox.textContent = error.message;
+
+                container.replaceChildren(errorBox);
 
             }
 
@@ -530,25 +329,13 @@
 
         // OPEN PROPOSAL
 
-        function openProposalModal(
-            projectId
-        ) {
+        function openProposalModal(projectId) {
 
-            document
-                .getElementById(
-                    "proposalProjectId"
-                )
-                .value =
+            document.getElementById("proposalProjectId").value =
                 projectId;
 
-
-            document
-                .getElementById(
-                    "proposalModal"
-                )
-                .classList.remove(
-                    "hidden"
-                );
+            document.getElementById("proposalModal")
+                .classList.remove("hidden");
 
         }
 
@@ -557,191 +344,110 @@
 
         function closeProposalModal() {
 
-            document
-                .getElementById(
-                    "proposalModal"
-                )
-                .classList.add(
-                    "hidden"
-                );
+            document.getElementById("proposalModal")
+                .classList.add("hidden");
 
-
-            document
-                .getElementById(
-                    "proposalForm"
-                )
-                .reset();
+            document.getElementById("proposalForm").reset();
 
         }
 
 
         // SUBMIT PROPOSAL
 
-        document
-            .getElementById(
-                "proposalForm"
-            )
-            .addEventListener(
-                "submit",
-                async function(event) {
+        document.getElementById("proposalForm")
+            .addEventListener("submit", async function(event) {
 
-                    event.preventDefault();
+                event.preventDefault();
 
+                const projectId = Number(
+                    document.getElementById("proposalProjectId").value
+                );
 
-                    const projectId =
-                        Number(
-                            document
-                                .getElementById(
-                                    "proposalProjectId"
-                                )
-                                .value
-                        );
+                const proposedAmount = Number(
+                    document.getElementById("proposedAmount").value
+                );
 
+                const estimatedDays = Number(
+                    document.getElementById("estimatedDays").value
+                );
 
-                    const proposedAmount =
-                        Number(
-                            document
-                                .getElementById(
-                                    "proposedAmount"
-                                )
-                                .value
-                        );
+                const proposalText = document
+                    .getElementById("proposalText")
+                    .value.trim();
 
+                try {
 
-                    const estimatedDays =
-                        Number(
-                            document
-                                .getElementById(
-                                    "estimatedDays"
-                                )
-                                .value
-                        );
+                    const response = await fetch(
+                        `${API_URL}/freelancer/proposals`,
+                        {
+                            method: "POST",
 
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
 
-                    const proposalText =
-                        document
-                            .getElementById(
-                                "proposalText"
-                            )
-                            .value
-                            .trim();
-
-
-                    try {
-
-                        const response =
-                            await fetch(
-                                `${API_URL}/freelancer/proposals`,
-                                {
-                                    method: "POST",
-
-                                    headers: {
-                                        "Content-Type":
-                                            "application/json",
-
-                                        "Authorization":
-                                            `Bearer ${token}`
-                                    },
-
-                                    body:
-                                        JSON.stringify({
-                                            project_id:
-                                                projectId,
-
-                                            proposal_text:
-                                                proposalText,
-
-                                            proposed_amount:
-                                                proposedAmount,
-
-                                            estimated_days:
-                                                estimatedDays
-                                        })
-                                }
-                            );
-
-
-                        const data =
-                            await response.json();
-
-
-                        if (!response.ok) {
-
-                            throw new Error(
-                                data.message ||
-                                "Failed to submit proposal."
-                            );
-
+                            body: JSON.stringify({
+                                project_id: projectId,
+                                proposal_text: proposalText,
+                                proposed_amount: proposedAmount,
+                                estimated_days: estimatedDays
+                            })
                         }
+                    );
 
+                    const data = await response.json();
 
-                        alert(
-                            "Proposal submitted successfully!"
+                    if (!response.ok) {
+                        throw new Error(
+                            data.message || "Failed to submit proposal."
                         );
-
-
-                        closeProposalModal();
-
-
-                        loadProjects();
-
-
-                    } catch (error) {
-
-                        console.error(
-                            "Proposal error:",
-                            error
-                        );
-
-                        alert(
-                            error.message
-                        );
-
                     }
 
-                }
-            );
+                    alert("Proposal submitted successfully!");
 
+                    closeProposalModal();
+                    loadProjects();
+
+                } catch (error) {
+
+                    console.error("Proposal error:", error);
+                    alert(error.message);
+
+                }
+
+            });
+
+
+        // NAVIGATION
 
         function openContracts() {
-
-            window.location.href =
-                "contracts.html";
-
+            window.location.href = "contracts.html";
         }
-
 
         function openMessages() {
-
-            window.location.href =
-                "communication.html";
-
+            window.location.href = "communication.html";
         }
 
 
-        function formatDate(
-            date
-        ) {
+        // FORMAT DATE
+
+        function formatDate(date) {
 
             if (!date) {
                 return "-";
             }
 
-            return new Date(
-                date
-            ).toLocaleDateString(
-                "en-IN"
-            );
+            return new Date(date).toLocaleDateString("en-IN");
 
         }
 
 
-        loadProfile();
+        // INITIAL LOAD
 
+        loadProfile();
         loadProjects();
 
     </script>
-
 </body>
-
 </html>
